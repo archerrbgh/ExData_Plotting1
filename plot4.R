@@ -1,0 +1,26 @@
+#Load and preprocess data
+data <- read.table("household_power_consumption.txt", sep = ";", header = TRUE)
+data$Date <- as.Date(data$Date, "%d/%m/%Y")
+subdata <- subset(data, Date == "2007-02-01" | Date == "2007-02-02")
+subdata$DateTime <- paste(subdata$Date, subdata$Time)
+subdata$DateTime <- strptime(subdata$DateTime, "%Y-%m-%d %H:%M:%S")
+subdata[,3] <- as.numeric(as.character(subdata[,3]))
+subdata[,4] <- as.numeric(as.character(subdata[,4]))
+subdata[,5] <- as.numeric(as.character(subdata[,5]))
+subdata[,7] <- as.numeric(as.character(subdata[,7]))
+subdata[,8] <- as.numeric(as.character(subdata[,8]))
+subdata[,9] <- as.numeric(as.character(subdata[,9]))
+
+#Generate plots
+png("plot4.png", height = 480, width = 480, bg = "white")
+par(mfrow=c(2,2))
+with (subdata, {
+    plot(subdata[,10], subdata[,3], type = "l", xlab = "", ylab = "Global Active Power")
+    plot(subdata[,10], subdata[,5], type = "l", xlab = "datetime", ylab = "Voltage")
+    plot(subdata[,10], subdata[,7], type = "l", xlab = "", ylab = "Energy sub metering")
+    lines(subdata[,10], subdata[,8], col = "red")
+    lines(subdata[,10], subdata[,9], col = "blue")
+    legend("topright", lty = 1, bty = "n", col = c("black", "red", "blue"), legend = c("Sub_metering_1", "Sub_metering_2", "Sub_metering_3"))
+    plot(subdata[,10], subdata[,4], type = "l", xlab = "datetime", ylab = "Global_reactive_power")
+})
+dev.off()
